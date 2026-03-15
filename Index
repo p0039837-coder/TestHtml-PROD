@@ -1,1 +1,1592 @@
---1
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Municipal BI Navigation</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    background: #030E1D;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body {
+    width: 100vw !important;
+    max-width: 100vw !important;
+}
+
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+.top-left-button {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 9999;
+}
+
+.top-right-button {
+    position: fixed;
+    top: 23%;
+    right: 157px;
+    transform: translateY(0);
+    z-index: 9999;
+    transition: right 0.3s ease;
+    display: none;
+}
+
+/* באפליקציה מותקנת - הזזה ימינה */
+@media all and (display-mode: standalone) {
+    .top-right-button {
+        right: 78px !important;
+    }
+    #scrollbarCover {
+        right: 58px !important;
+    }
+}
+
+.top-btn {
+    background: #04274D;
+    color: white;
+    padding: 8px;
+    border-radius: 12px 0 0 12px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    transition: all 0.2s;
+    width: 22px;
+    height: 75vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.top-btn:hover {
+    color: #4fc3f7;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 260px;
+    height: 100vh;
+    height: 100dvh;
+    background: #04274D;
+    color: white;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 5500;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 0;
+    display: none;
+}
+
+.sidebar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.sidebar-close-btn {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 20px;
+    height: 20px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.sidebar-close-btn:hover {
+    transform: scale(1.3);
+}
+
+.sidebar.open { transform: translateX(0); }
+
+.top-menu-buttons {
+    display: flex;
+    flex-direction: row;
+    background: #04274D;
+    border-bottom: 2.5px solid rgba(255, 255, 255, 0.6);
+}
+
+.home-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 0 12px 0;
+    background: #00334d;
+}
+
+.home-icon-large {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.top-menu-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 6px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 11px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: normal;
+    color: white;
+    transition: background 0.2s;
+    gap: 6px;
+}
+
+.top-menu-icon {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+}
+
+.top-menu-btn:hover {
+    background: #0A4A8A;
+}
+
+.top-menu-btn.active {
+    background: #00132D;
+}
+
+.decorative-icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: #00334d;
+    border-bottom: 2px solid rgba(79, 195, 247, 0.3);
+}
+
+.decorative-icon {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: #00334d;
+    border-bottom: 2px solid rgba(79, 195, 247, 0.3);
+}
+
+.logo-icon {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.menu-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: auto;
+}
+
+.menu-container::-webkit-scrollbar {
+    width: 0;
+    display: none;
+}
+
+.menu-container {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px 0 14px;
+    border-bottom: 0.2px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    text-align: right;
+    font-size: 11px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: normal;
+    color: white;
+    transition: background 0.2s;
+    flex: 1;
+    min-height: 45px;
+}
+
+.menu-icon {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+    flex-shrink: 0;
+    margin-left: 8px;
+}
+
+.menu-btn:hover { background: #0A4A8A; }
+.menu-btn.active {
+    background: #00132D;
+}
+
+.main {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0;
+}
+
+.top-banner {
+    width: 100%;
+    height: auto;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.top-banner > img:first-child {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.banner-logo {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    width: auto;
+    height: auto;
+    max-width: 241px;
+    max-height: 160px;
+    z-index: 2;
+}
+
+.date-time-container {
+    position: absolute;
+    top: 100%;
+    left: 20px;
+    margin-top: 10px;
+    color: white;
+    text-align: left;
+    z-index: 2;
+    font-family: Arial, sans-serif;
+}
+
+.greeting {
+    position: absolute;
+    top: 100%;
+    right: 20px;
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: normal;
+    color: #CDD3DC;
+    z-index: 2;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.date-time {
+    font-size: 12px;
+    font-weight: normal;
+    color: #CDD3DC;
+    direction: ltr;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.content-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 2vh 2vw;
+}
+
+.tiles-wrapper {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 1.5vw;
+    width: 90%;
+    max-width: 1600px;
+}
+
+.tile {
+    aspect-ratio: 1;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #CDD3DC;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 10px;
+    font-size: 12px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: bold;
+}
+
+.tile-icon {
+    width: 60%;
+    height: 60%;
+    object-fit: contain;
+    transition: all 0.2s;
+}
+
+.tile:hover {
+    border-color: rgba(255,255,255,0.5);
+    transform: scale(1.05);
+}
+
+.tile:hover .tile-icon {
+    filter: drop-shadow(0 0 8px rgba(79, 195, 247, 0.6));
+    transform: scale(1.1);
+}
+
+.main-dashboard {
+    width: 90%;
+    max-width: 300px;
+    height: 12vh;
+    min-height: 100px;
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: #CDD3DC;
+    font-size: 12px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 5vh;
+}
+
+.main-dashboard:hover {
+    border-color: rgba(255,255,255,0.5);
+    transform: scale(1.05);
+}
+
+.main-dashboard:hover .main-dashboard-icon {
+    filter: drop-shadow(0 0 8px rgba(79, 195, 247, 0.6));
+    transform: scale(1.1);
+}
+
+.main-dashboard-icon {
+    width: 60%;
+    height: 60%;
+    max-width: 80px;
+    max-height: 80px;
+    object-fit: contain;
+    transition: all 0.2s;
+}
+
+.main-dashboard:hover {
+    border-color: rgba(255,255,255,0.6);
+    transform: scale(1.02);
+}
+
+#preAuthFrame {
+    position: fixed;
+    width: 1px;
+    height: 1px;
+    top: -10000px;
+    opacity: 0;
+    border: none;
+}
+
+.iframe-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden !important;
+    display: none;
+    z-index: 3000;
+    background: #030E1D;
+    transition: background 0.3s ease;
+}
+
+.iframe-container::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+#reportFrame {
+    position: absolute;
+    width: 1920px;
+    height: 1080px;
+    border: none;
+    transform-origin: top left;
+    background: #030E1D;
+    overflow: hidden !important;
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+}
+
+#reportFrame::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+}
+
+body::-webkit-scrollbar {
+    display: none !important;
+}
+
+* {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+*::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+div::-webkit-scrollbar,
+iframe::-webkit-scrollbar {
+    display: none !important;
+    width: 0px !important;
+    height: 0px !important;
+    background: transparent !important;
+}
+
+#loadingScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #030E1D;
+    display: none;
+    z-index: 3100;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 30px;
+}
+
+#loadingScreen.active ~ .top-left-button,
+#loadingScreen.active ~ .top-right-button {
+    display: none !important;
+}
+
+body.loading-active .top-left-button,
+body.loading-active .top-right-button {
+    display: none !important;
+}
+
+.hourglass-container {
+    width: 120px;
+    height: 168px;
+    position: relative;
+}
+
+.hourglass {
+    width: 100%;
+    height: 100%;
+    animation: flip 3s ease-in-out infinite;
+    transform-origin: center;
+}
+
+@keyframes flip {
+    0%, 45% { transform: rotate(0deg); }
+    50%, 95% { transform: rotate(180deg); }
+    100% { transform: rotate(180deg); }
+}
+
+.sand-stream {
+    animation: sandFlow 3s ease-in-out infinite;
+}
+
+@keyframes sandFlow {
+    0%, 45% { opacity: 0.7; }
+    48%, 100% { opacity: 0; }
+}
+
+.sand-top {
+    animation: sandTopEmpty 3s ease-in-out infinite;
+    transform-origin: center;
+}
+
+@keyframes sandTopEmpty {
+    0% { opacity: 0.9; transform: scaleY(1); }
+    45% { opacity: 0.3; transform: scaleY(0.2); }
+    50%, 100% { opacity: 0.9; transform: scaleY(1); }
+}
+
+.sand-bottom {
+    animation: sandBottomFill 3s ease-in-out infinite;
+    transform-origin: center bottom;
+}
+
+@keyframes sandBottomFill {
+    0% { opacity: 0.3; transform: scaleY(0.2); }
+    45% { opacity: 0.9; transform: scaleY(1); }
+    50% { opacity: 0.3; transform: scaleY(0.2); }
+    100% { opacity: 0.9; transform: scaleY(1); }
+}
+
+.hourglass-frame {
+    filter: drop-shadow(0 0 10px rgba(79, 195, 247, 0.5));
+}
+
+.loading-text {
+    color: white;
+    font-size: 24px;
+    font-weight: 300;
+    letter-spacing: 2px;
+}
+
+.loading-dots {
+    display: inline-block;
+    width: 60px;
+    text-align: left;
+}
+
+@keyframes dotAnimation {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+}
+
+.loading-dots::after {
+    content: '';
+    animation: dotAnimation 1.5s infinite;
+}
+
+@media (max-height: 800px) {
+    .main {
+        padding: 1vh 2vw;
+    }
+    .tiles-wrapper {
+        margin-bottom: 2vh;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<iframe id="preAuthFrame"></iframe>
+
+<div class="top-right-button">
+    <div class="top-btn" onclick="toggleSidebar()" title="תפריט ניווט">❯</div>
+</div>
+
+<div id="sidebar" class="sidebar">
+    <div class="sidebar-close-btn" onclick="toggleSidebar()">✕</div>
+    
+    <div class="top-menu-buttons">
+        <div class="top-menu-btn" data-report="main" onclick="loadReport('main')">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%91%D7%A7%D7%A8%D7%94%20%D7%A8%D7%90%D7%A9%D7%99.svg" 
+                 alt="בקרה ראשי" 
+                 class="top-menu-icon">
+            <span>בקרה ראשי</span>
+        </div>
+        <div class="top-menu-btn" onclick="returnToHome()">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=Variant2.svg" 
+                 alt="מסך הבית" 
+                 class="top-menu-icon">
+            <span>מסך הבית</span>
+        </div>
+    </div>
+    
+    <div class="menu-container">
+        <div class="menu-btn" data-report="cityPopulation" onclick="loadReport('cityPopulation')">
+            <span>מרשם אוכלוסין עיר</span>
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%9E%D7%A8%D7%A9%D7%9D%20%D7%90%D7%95%D7%9B%D7%9C%D7%95%D7%A1%D7%99%D7%9F%20-%20%D7%A2%D7%99%D7%A8.svg" 
+                 alt="" 
+                 class="menu-icon">
+        </div>
+        <div class="menu-btn" data-report="neighborhoodPopulation" onclick="loadReport('neighborhoodPopulation')">
+            <span>מרשם אוכלוסין שכונה</span>
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%9E%D7%A8%D7%A9%D7%9D%20%D7%90%D7%95%D7%9B%D7%9C%D7%95%D7%A1%D7%99%D7%9F%20-%20%D7%A9%D7%9B%D7%95%D7%A0%D7%94.svg" 
+                 alt="" 
+                 class="menu-icon">
+        </div>
+        <div class="menu-btn" data-report="vehicles" onclick="loadReport('vehicles')">
+            <span>רכבים עירוניים</span>
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%A8%D7%9B%D7%91%D7%99%D7%9D%20%D7%A2%D7%99%D7%A8%D7%95%D7%A0%D7%99%D7%99%D7%9D.svg" 
+                 alt="" 
+                 class="menu-icon">
+        </div>
+        <div class="menu-btn" data-report="garbage" onclick="loadReport('garbage')">
+            <span>פינוי אשפה</span>
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%AA%D7%91%D7%A8%D7%95%D7%90%D7%94.svg" 
+                 alt="" 
+                 class="menu-icon">
+        </div>
+        <div class="menu-btn" data-report="water" onclick="loadReport('water')">
+            <span>צריכת מים</span>
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%A6%D7%A8%D7%99%D7%9B%D7%AA%20%D7%9E%D7%99%D7%9D.svg" 
+                 alt="" 
+                 class="menu-icon">
+        </div>
+        <div class="menu-btn" data-report="appointments" onclick="loadReport('appointments')">
+            <span>זימון תורים</span>
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%96%D7%99%D7%9E%D7%95%D7%9F%20%D7%AA%D7%95%D7%A8%D7%99%D7%9D.svg" 
+                 alt="" 
+                 class="menu-icon">
+        </div>
+        <div class="menu-btn" data-report="arnona" onclick="loadReport('arnona')">
+            <span>ארנונה</span>
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/watermarked-c39434f3-00f8-4bc5-a817-2fd6c563388d1111111-removebg-preview.png" 
+                 alt="" 
+                 class="menu-icon">
+        </div>
+        <div class="menu-btn" data-report="transport" onclick="loadReport('transport')">
+            <span>הסעות עירוניות</span>
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/transfer.png" 
+                 alt="" 
+                 class="menu-icon">
+        </div>
+        <div class="menu-btn" data-report="businessLicensing" onclick="loadReport('businessLicensing')">
+            <span>רישוי עסקים</span>
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%A8%D7%99%D7%A9%D7%95%D7%99%20%D7%A2%D7%A1%D7%A7%D7%99%D7%9D.svg" 
+                 alt="" 
+                 class="menu-icon">
+        </div>
+        <div class="menu-btn" data-report="businessPromotion" onclick="loadReport('businessPromotion')">
+            <span>קידום עסקים</span>
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%A7%D7%99%D7%93%D7%95%D7%9D%20%D7%95%D7%A8%D7%99%D7%A9%D7%95%D7%99%20%D7%A2%D7%A1%D7%A7%D7%99%D7%9D.svg" 
+                 alt="" 
+                 class="menu-icon">
+        </div>
+        <div class="menu-btn" data-report="parking" onclick="loadReport('parking')">
+            <span>תחבורה וחנייה</span>
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%AA%D7%97%D7%91%D7%95%D7%A8%D7%94%20%D7%A2%D7%99%D7%A8%D7%95%D7%A0%D7%99%D7%AA.svg" 
+                 alt="" 
+                 class="menu-icon">
+        </div>
+        <div class="menu-btn" data-report="emergency" onclick="loadReport('emergency')">
+            <span>בקרת חירום</span>
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%91%D7%A7%D7%A8%D7%94%20%D7%95%D7%97%D7%99%D7%A8%D7%95%D7%9D.svg" 
+                 alt="" 
+                 class="menu-icon">
+        </div>
+        <div class="menu-btn" data-report="crime" onclick="loadReport('crime')">
+            <span>פשיעה ואכיפה</span>
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%91%D7%99%D7%98%D7%97%D7%95%D7%9F%20%D7%95%D7%97%D7%99%D7%A8%D7%95%D7%9D.svg" 
+                 alt="" 
+                 class="menu-icon">
+        </div>
+        <div class="menu-btn" data-report="center106" onclick="loadReport('center106')">
+            <span>מוקד 106</span>
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%9E%D7%95%D7%A7%D7%93%20106.svg" 
+                 alt="" 
+                 class="menu-icon">
+        </div>
+        <div class="menu-btn" data-report="benchmark" onclick="loadReport('benchmark')">
+            <span>מדרג רשויות</span>
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%A1%D7%A7%D7%A8%20%D7%97%D7%91%D7%A8%D7%AA%D7%99.svg" 
+                 alt="" 
+                 class="menu-icon">
+        </div>
+        <div class="menu-btn" data-report="employment" onclick="loadReport('employment')">
+            <span>תעסוקה עירונית</span>
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/employment.png" 
+                 alt="" 
+                 class="menu-icon">
+        </div>
+    </div>
+</div>
+
+<div class="main">
+    <div class="top-banner">
+        <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Mask%20group.png" alt="באנר">
+        
+        <div class="date-time-container">
+            <div class="date-time" id="dateTime"></div>
+        </div>
+        
+        <div class="greeting" id="greeting"></div>
+        
+        <img src="https://municipaldatalake.blob.core.windows.net/imagefix/%D7%9E%D7%A9%D7%9B%D7%9C.png" 
+             alt="לוגו" 
+             class="banner-logo">
+    </div>
+    
+    <div class="content-area">
+        <div class="tiles-wrapper">
+        <div class="tile" onclick="loadReport('cityPopulation')">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%9E%D7%A8%D7%A9%D7%9D%20%D7%90%D7%95%D7%9B%D7%9C%D7%95%D7%A1%D7%99%D7%9F%20-%20%D7%A2%D7%99%D7%A8.svg" 
+                 alt="מרשם אוכלוסין עיר" 
+                 class="tile-icon">
+            <span>מרשם אוכלוסין עיר</span>
+        </div>
+        
+        <div class="tile" onclick="loadReport('neighborhoodPopulation')">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%9E%D7%A8%D7%A9%D7%9D%20%D7%90%D7%95%D7%9B%D7%9C%D7%95%D7%A1%D7%99%D7%9F%20-%20%D7%A9%D7%9B%D7%95%D7%A0%D7%94.svg" 
+                 alt="מרשם אוכלוסין שכונה" 
+                 class="tile-icon">
+            <span>מרשם אוכלוסין שכונה</span>
+        </div>
+        
+        <div class="tile" onclick="loadReport('vehicles')">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%A8%D7%9B%D7%91%D7%99%D7%9D%20%D7%A2%D7%99%D7%A8%D7%95%D7%A0%D7%99%D7%99%D7%9D.svg" 
+                 alt="רכבים עירוניים" 
+                 class="tile-icon">
+            <span>רכבים עירוניים</span>
+        </div>
+        
+        <div class="tile" onclick="loadReport('garbage')">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%AA%D7%91%D7%A8%D7%95%D7%90%D7%94.svg" 
+                 alt="תברואה" 
+                 class="tile-icon">
+            <span>פינוי אשפה</span>
+        </div>
+        
+        <div class="tile" onclick="loadReport('water')">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%A6%D7%A8%D7%99%D7%9B%D7%AA%20%D7%9E%D7%99%D7%9D.svg" 
+                 alt="צריכת מים" 
+                 class="tile-icon">
+            <span>צריכת מים</span>
+        </div>
+        
+        <div class="tile" onclick="loadReport('appointments')">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%96%D7%99%D7%9E%D7%95%D7%9F%20%D7%AA%D7%95%D7%A8%D7%99%D7%9D.svg" 
+                 alt="זימון תורים" 
+                 class="tile-icon">
+            <span>זימון תורים</span>
+        </div>
+        
+        <div class="tile" onclick="loadReport('arnona')">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/watermarked-c39434f3-00f8-4bc5-a817-2fd6c563388d1111111-removebg-preview.png" 
+                 alt="ארנונה" 
+                 class="tile-icon">
+            <span>ארנונה</span>
+        </div>
+        
+        <div class="tile" onclick="loadReport('transport')">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/transfer.png" 
+                 alt="הסעות עירוניות" 
+                 class="tile-icon">
+            <span>הסעות עירוניות</span>
+        </div>
+        
+        <div class="tile" onclick="loadReport('businessLicensing')">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%A8%D7%99%D7%A9%D7%95%D7%99%20%D7%A2%D7%A1%D7%A7%D7%99%D7%9D.svg" 
+                 alt="רישוי עסקים" 
+                 class="tile-icon">
+            <span>רישוי עסקים</span>
+        </div>
+        
+        <div class="tile" onclick="loadReport('businessPromotion')">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%A7%D7%99%D7%93%D7%95%D7%9D%20%D7%95%D7%A8%D7%99%D7%A9%D7%95%D7%99%20%D7%A2%D7%A1%D7%A7%D7%99%D7%9D.svg" 
+                 alt="קידום עסקים" 
+                 class="tile-icon">
+            <span>קידום עסקים</span>
+        </div>
+        
+        <div class="tile" onclick="loadReport('parking')">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%AA%D7%97%D7%91%D7%95%D7%A8%D7%94%20%D7%A2%D7%99%D7%A8%D7%95%D7%A0%D7%99%D7%AA.svg" 
+                 alt="תחבורה וחנייה" 
+                 class="tile-icon">
+            <span>תחבורה וחנייה</span>
+        </div>
+        
+        <div class="tile" onclick="loadReport('emergency')">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%91%D7%A7%D7%A8%D7%94%20%D7%95%D7%97%D7%99%D7%A8%D7%95%D7%9D.svg" 
+                 alt="בקרת חירום" 
+                 class="tile-icon">
+            <span>בקרת חירום</span>
+        </div>
+        
+        <div class="tile" onclick="loadReport('crime')">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%91%D7%99%D7%98%D7%97%D7%95%D7%9F%20%D7%95%D7%97%D7%99%D7%A8%D7%95%D7%9D.svg" 
+                 alt="פשיעה ואכיפה" 
+                 class="tile-icon">
+            <span>פשיעה ואכיפה</span>
+        </div>
+        
+        <div class="tile" onclick="loadReport('center106')">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%9E%D7%95%D7%A7%D7%93%20106.svg" 
+                 alt="מוקד 106" 
+                 class="tile-icon">
+            <span>מוקד 106</span>
+        </div>
+        
+        <div class="tile" onclick="loadReport('benchmark')">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%A1%D7%A7%D7%A8%20%D7%97%D7%91%D7%A8%D7%AA%D7%99.svg" 
+                 alt="מדרג רשויות" 
+                 class="tile-icon">
+            <span>מדרג רשויות</span>
+        </div>
+        
+        <div class="tile" onclick="loadReport('employment')">
+            <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/employment.png" 
+                 alt="תעסוקה עירונית" 
+                 class="tile-icon">
+            <span>תעסוקה עירונית</span>
+        </div>
+    </div>
+    <div class="main-dashboard" onclick="loadReport('main')">
+        <img src="https://municipaldatalake.blob.core.windows.net/dashboard-icons/Property%201=%D7%91%D7%A7%D7%A8%D7%94%20%D7%A8%D7%90%D7%A9%D7%99.svg" 
+             alt="בקרה ראשי" 
+             class="main-dashboard-icon">
+        <span>לוח בקרה ראשי</span>
+    </div>
+    </div>
+</div>
+
+<div id="loadingScreen">
+    <div class="hourglass-container">
+        <svg class="hourglass" viewBox="0 0 120 168" xmlns="http://www.w3.org/2000/svg">
+            <g class="hourglass-frame">
+                <path d="M20 10 L100 10 L100 20 L95 25 L95 70 L60 85 L95 100 L95 145 L100 150 L100 160 L20 160 L20 150 L25 145 L25 100 L60 85 L25 70 L25 25 L20 20 Z" 
+                      fill="none" stroke="#4fc3f7" stroke-width="2"/>
+            </g>
+            <g class="sand-top">
+                <path d="M30 25 L90 25 L90 30 Q90 50 60 65 Q30 50 30 30 Z" 
+                      fill="#ffb74d" opacity="0.9"/>
+            </g>
+            <g class="sand-bottom">
+                <path d="M30 145 L90 145 L90 140 Q90 130 85 120 L35 120 Q30 130 30 140 Z" 
+                      fill="#ffb74d" opacity="0.9"/>
+            </g>
+            <g class="sand-stream">
+                <line x1="60" y1="70" x2="60" y2="100" 
+                      stroke="#ffb74d" stroke-width="2" opacity="0.7"/>
+            </g>
+        </svg>
+    </div>
+    
+    <div class="loading-text">
+        טעינה<span class="loading-dots"></span>
+    </div>
+</div>
+
+<div class="iframe-container" id="iframeContainer">
+    <iframe id="reportFrame" scrolling="no" frameborder="0"></iframe>
+    <div id="scrollbarCover" style="position: absolute; top: 0; right: 135px; width: 17px; height: 100%; background: #030E1D; z-index: 9999; pointer-events: none;"></div>
+</div>
+
+<script>
+const URLS = {
+    cityPopulation: "https://app.powerbi.com/reportEmbed?reportId=eccd0612-6bc4-47da-95b7-4df5603e6120&autoAuth=true&ctid=a8bf01d5-f36b-4b08-ad19-18fe50aa833c&navContentPaneEnabled=false&filterPaneEnabled=false&pageName=ReportSection",
+    neighborhoodPopulation: "https://app.powerbi.com/reportEmbed?reportId=d7b55659-3e5e-4b9c-87a4-fd226d334351&autoAuth=true&ctid=a8bf01d5-f36b-4b08-ad19-18fe50aa833c&navContentPaneEnabled=false&filterPaneEnabled=false&pageName=ReportSection",
+    vehicles: "https://app.powerbi.com/reportEmbed?reportId=0cfe591f-05ba-4f53-8ee3-470740ab0dc1&autoAuth=true&ctid=a8bf01d5-f36b-4b08-ad19-18fe50aa833c&navContentPaneEnabled=false&filterPaneEnabled=false&pageName=ReportSection",
+    garbage: "https://app.powerbi.com/reportEmbed?reportId=9e6e7356-faa3-4b6e-bfbe-8694d7ff8172&autoAuth=true&ctid=a8bf01d5-f36b-4b08-ad19-18fe50aa833c&navContentPaneEnabled=false&filterPaneEnabled=false&pageName=ReportSection",
+    water: "https://app.powerbi.com/reportEmbed?reportId=a3653bce-8962-4adb-92c0-b94745dd6873&autoAuth=true&ctid=a8bf01d5-f36b-4b08-ad19-18fe50aa833c&navContentPaneEnabled=false&filterPaneEnabled=false&pageName=ReportSection",
+    appointments: "https://app.powerbi.com/reportEmbed?reportId=78578cd7-4e9a-4fb5-8985-4b207509e8fd&autoAuth=true&ctid=a8bf01d5-f36b-4b08-ad19-18fe50aa833c&navContentPaneEnabled=false&filterPaneEnabled=false&pageName=ReportSection",
+    arnona: "https://app.powerbi.com/reportEmbed?reportId=c75b1a6f-9818-418b-955d-834040cab1a6&autoAuth=true&ctid=a8bf01d5-f36b-4b08-ad19-18fe50aa833c&navContentPaneEnabled=false&filterPaneEnabled=false&language=en-US&formatLocale=en-US&pageName=ReportSection",
+    transport: "https://app.powerbi.com/reportEmbed?reportId=a55a9e1b-81cf-4392-b30a-43d838eaf6dd&autoAuth=true&ctid=a8bf01d5-f36b-4b08-ad19-18fe50aa833c&navContentPaneEnabled=false&filterPaneEnabled=false&pageName=ReportSection",
+    businessLicensing: "https://app.powerbi.com/reportEmbed?reportId=aaeb8b94-337f-483f-9170-7e639f6b121a&autoAuth=true&ctid=a8bf01d5-f36b-4b08-ad19-18fe50aa833c&navContentPaneEnabled=false&filterPaneEnabled=false&pageName=ReportSection",
+    businessPromotion: "https://app.powerbi.com/reportEmbed?reportId=c798cf4e-63d3-4e93-84f1-72e6cca54e11&autoAuth=true&ctid=a8bf01d5-f36b-4b08-ad19-18fe50aa833c&navContentPaneEnabled=false&filterPaneEnabled=false&pageName=ReportSection",
+    parking: "https://app.powerbi.com/reportEmbed?reportId=6fb644eb-7f6f-4f0d-aeb2-7ea7b89b6625&autoAuth=true&ctid=a8bf01d5-f36b-4b08-ad19-18fe50aa833c&navContentPaneEnabled=false&filterPaneEnabled=false&pageName=ReportSection",
+    emergency: "https://app.powerbi.com/reportEmbed?reportId=0b0c2437-7bd0-4cbf-99b9-5455889a45d6&autoAuth=true&ctid=a8bf01d5-f36b-4b08-ad19-18fe50aa833c&navContentPaneEnabled=false&filterPaneEnabled=false&pageName=ReportSection",
+    crime: "https://app.powerbi.com/reportEmbed?reportId=53b6c266-bc30-4554-a666-e5dcfa80af78&autoAuth=true&ctid=a8bf01d5-f36b-4b08-ad19-18fe50aa833c&navContentPaneEnabled=false&filterPaneEnabled=false&pageName=ReportSection",
+    center106: "https://app.powerbi.com/reportEmbed?reportId=6af067c0-36a5-4fdb-ac27-56121a2f0847&autoAuth=true&ctid=a8bf01d5-f36b-4b08-ad19-18fe50aa833c&navContentPaneEnabled=false&filterPaneEnabled=false&pageName=ReportSection",
+    benchmark: "https://app.powerbi.com/reportEmbed?reportId=5776724a-ef63-4a9c-9568-748a30bd1337&autoAuth=true&ctid=a8bf01d5-f36b-4b08-ad19-18fe50aa833c&navContentPaneEnabled=false&filterPaneEnabled=false&pageName=ReportSection",
+    employment: "https://app.powerbi.com/reportEmbed?reportId=5ae99ceb-395e-4af7-bd46-83b62d9d4209&autoAuth=true&ctid=a8bf01d5-f36b-4b08-ad19-18fe50aa833c&navContentPaneEnabled=false&filterPaneEnabled=false&pageName=ReportSection",
+    main: "https://app.powerbi.com/reportEmbed?reportId=cff48281-a598-4bab-96d7-b4ddc8e69e66&autoAuth=true&ctid=a8bf01d5-f36b-4b08-ad19-18fe50aa833c&navContentPaneEnabled=false&filterPaneEnabled=false&pageName=ReportSection"
+};
+
+const RESOLUTION_POSITIONS = {
+    "1920x1080": { browser: 157, app: 78, cover: 135, coverApp: 58 },
+    "2560x1440": { browser: 209, app: 104, cover: 180, coverApp: 77 },
+    "3840x2160": { browser: 314, app: 156, cover: 270, coverApp: 116 },
+    "1366x768": { browser: 112, app: 56, cover: 96, coverApp: 41 },
+    "1360x768": { browser: 111, app: 55, cover: 96, coverApp: 41 },
+    "1280x720": { browser: 105, app: 52, cover: 90, coverApp: 39 },
+    "1600x900": { browser: 131, app: 65, cover: 113, coverApp: 48 },
+    "1920x1200": { browser: 157, app: 78, cover: 135, coverApp: 58 },
+    "2560x1600": { browser: 209, app: 104, cover: 180, coverApp: 77 },
+    "1680x1050": { browser: 138, app: 68, cover: 118, coverApp: 51 },
+    "1440x900": { browser: 118, app: 59, cover: 101, coverApp: 43 },
+    "1280x800": { browser: 105, app: 52, cover: 90, coverApp: 39 },
+    "2560x1080": { browser: 209, app: 104, cover: 180, coverApp: 77 },
+    "3440x1440": { browser: 281, app: 140, cover: 242, coverApp: 104 },
+    "2256x1504": { browser: 184, app: 92, cover: 158, coverApp: 68 },
+    "2880x1920": { browser: 235, app: 117, cover: 202, coverApp: 87 },
+    "1280x1024": { browser: 105, app: 52, cover: 90, coverApp: 39 },
+    "1600x1200": { browser: 131, app: 65, cover: 113, coverApp: 48 },
+    "1280x960": { browser: 105, app: 52, cover: 90, coverApp: 39 },
+    "1152x864": { browser: 94, app: 47, cover: 81, coverApp: 35 },
+    "1024x768": { browser: 84, app: 42, cover: 72, coverApp: 31 },
+    "800x600": { browser: 65, app: 33, cover: 56, coverApp: 24 }
+};
+
+// ⏰ מערכת חוסר פעילות - חזרה למסך הבית אחרי 5 דקות
+let inactivityTimer;
+const INACTIVITY_TIMEOUT = 300000; // 5 דקות
+const MAX_LOADING_TIME = 9500; // 9.5 שניות
+
+function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(function() {
+        const container = document.getElementById("iframeContainer");
+        if (container && container.style.display !== 'none') {
+            console.log('⏰ 5 דקות חוסר פעילות - חזרה למסך הבית');
+            returnToHomeWithLoading();
+        }
+    }, INACTIVITY_TIMEOUT);
+}
+
+function returnToHomeWithLoading() {
+    const loading = document.getElementById("loadingScreen");
+    const main = document.querySelector('.main');
+    const container = document.getElementById("iframeContainer");
+    const sidebar = document.getElementById("sidebar");
+    const btnContainer = document.querySelector('.top-right-button');
+    
+    loading.style.display = "flex";
+    document.body.classList.add('loading-active');
+    
+    setTimeout(function() {
+        sidebar.classList.remove("open");
+        const btn = document.querySelector('.top-right-button .top-btn');
+        if (btn) btn.innerHTML = '❯';
+        
+        updateButtonPosition();
+        btnContainer.style.display = 'none';
+        container.style.display = "none";
+        main.style.display = "flex";
+        
+        document.querySelectorAll('.menu-btn').forEach(function(b) { b.classList.remove('active'); });
+        document.querySelectorAll('.top-menu-btn').forEach(function(b) { b.classList.remove('active'); });
+        
+        loading.style.display = "none";
+        document.body.classList.remove('loading-active');
+        
+        console.log('✅ חזרנו למסך הבית');
+        resetInactivityTimer();
+    }, MAX_LOADING_TIME);
+}
+
+['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'].forEach(function(event) {
+    document.addEventListener(event, resetInactivityTimer, true);
+});
+
+function calculatePositionForUnknownResolution(width) {
+    return {
+        browser: Math.round((157 / 1920) * width),
+        app: Math.round((78 / 1920) * width),
+        cover: Math.round((135 / 1920) * width),
+        coverApp: Math.round((58 / 1920) * width)
+    };
+}
+
+let fullscreenToggleCount = 0;
+
+function isFullscreen() {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                         window.navigator.standalone === true ||
+                         document.referrer.includes('android-app://');
+    
+    if (isStandalone) {
+        return fullscreenToggleCount % 2 === 1;
+    } else {
+        return (window.innerHeight === screen.height) && (window.innerWidth === screen.width);
+    }
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'F11' || e.keyCode === 122 || e.key === 'Escape' || e.keyCode === 27) {
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                             window.navigator.standalone === true ||
+                             document.referrer.includes('android-app://');
+        
+        if (isStandalone) {
+            fullscreenToggleCount++;
+            console.log('ספירת מסך מלא: ' + fullscreenToggleCount);
+            
+            setTimeout(function() {
+                handleScrollbarCoverInFullscreen();
+                updateButtonPosition();
+            }, 100);
+        }
+    }
+});
+
+function updateSidebarScaling() {
+    const sidebar = document.querySelector('.sidebar');
+    const menuContainer = document.querySelector('.menu-container');
+    if (!sidebar || !menuContainer) return;
+    
+    const screenHeight = window.innerHeight;
+    
+    const optimalSizes = {
+        homeIcon: 70,
+        topMenuIcon: 55,
+        menuIcon: 45,
+        menuHeight: 55,
+        fontSize: 14,
+        topPadding: 22
+    };
+    
+    applySizes(optimalSizes);
+    
+    setTimeout(function() {
+        const actualContentHeight = measureActualContentHeight();
+        
+        console.log('📏 מדידה: תוכן=' + actualContentHeight + 'px, מסך=' + screenHeight + 'px');
+        
+        var scaleFactor = 1.0;
+        
+        if (actualContentHeight > screenHeight * 0.98) {
+            scaleFactor = (screenHeight * 0.95) / actualContentHeight;
+            console.log('🔽 הקטנה נדרשת: scale=' + scaleFactor.toFixed(3));
+        } else if (actualContentHeight < screenHeight * 0.75) {
+            const availableSpace = screenHeight - actualContentHeight;
+            scaleFactor = 1.0 + (availableSpace / actualContentHeight) * 0.3;
+            console.log('🔼 הגדלה אפשרית: scale=' + scaleFactor.toFixed(3));
+        } else {
+            console.log('✅ גודל מושלם! scale=1.0');
+        }
+        
+        scaleFactor = Math.min(Math.max(scaleFactor, 0.6), 1.3);
+        
+        const finalSizes = {
+            homeIcon: Math.round(optimalSizes.homeIcon * scaleFactor),
+            topMenuIcon: Math.round(optimalSizes.topMenuIcon * scaleFactor),
+            menuIcon: Math.round(optimalSizes.menuIcon * scaleFactor),
+            menuHeight: Math.round(optimalSizes.menuHeight * scaleFactor),
+            fontSize: Math.max(Math.round(optimalSizes.fontSize * scaleFactor), 11),
+            topPadding: Math.round(optimalSizes.topPadding * scaleFactor)
+        };
+        
+        applySizes(finalSizes);
+        
+        console.log('📐 גדלים סופיים: font=' + finalSizes.fontSize + 'px, menuH=' + finalSizes.menuHeight + 'px, menuIcon=' + finalSizes.menuIcon + 'px');
+    }, 50);
+}
+
+function measureActualContentHeight() {
+    var totalHeight = 0;
+    
+    const homeIconContainer = document.querySelector('.home-icon-container');
+    const topMenuButtons = document.querySelector('.top-menu-buttons');
+    const decorativeIcon = document.querySelector('.decorative-icon-container');
+    const logoSection = document.querySelector('.logo-section');
+    const menuButtons = document.querySelectorAll('.menu-btn');
+    
+    if (homeIconContainer) totalHeight += homeIconContainer.offsetHeight;
+    if (topMenuButtons) totalHeight += topMenuButtons.offsetHeight;
+    if (decorativeIcon) totalHeight += decorativeIcon.offsetHeight;
+    if (logoSection) totalHeight += logoSection.offsetHeight;
+    
+    for (var i = 0; i < menuButtons.length; i++) {
+        totalHeight += menuButtons[i].offsetHeight;
+    }
+    
+    return totalHeight;
+}
+
+function applySizes(sizes) {
+    const styleId = 'dynamic-sidebar-styles';
+    let styleElement = document.getElementById(styleId);
+    
+    if (!styleElement) {
+        styleElement = document.createElement('style');
+        styleElement.id = styleId;
+        document.head.appendChild(styleElement);
+    }
+    
+    styleElement.textContent = `
+        .home-icon-large {
+            width: ${sizes.homeIcon}px !important;
+            height: ${sizes.homeIcon}px !important;
+        }
+        
+        .home-icon-container {
+            padding: ${sizes.topPadding}px 0 ${Math.round(sizes.topPadding * 0.7)}px 0 !important;
+        }
+        
+        .top-menu-icon {
+            width: ${sizes.topMenuIcon}px !important;
+            height: ${sizes.topMenuIcon}px !important;
+        }
+        
+        .top-menu-btn {
+            font-size: ${sizes.fontSize}px !important;
+            padding: ${Math.round(sizes.topPadding * 0.6)}px ${Math.round(sizes.topPadding * 0.35)}px !important;
+            gap: ${Math.round(sizes.topPadding * 0.35)}px !important;
+        }
+        
+        .menu-icon {
+            width: ${sizes.menuIcon}px !important;
+            height: ${sizes.menuIcon}px !important;
+        }
+        
+        .menu-btn {
+            min-height: ${sizes.menuHeight}px !important;
+            font-size: ${sizes.fontSize}px !important;
+        }
+        
+        .decorative-icon {
+            width: ${Math.round(130 * (sizes.menuIcon / 45))}px !important;
+            height: ${Math.round(130 * (sizes.menuIcon / 45))}px !important;
+        }
+        
+        .logo-icon {
+            width: ${Math.round(85 * (sizes.menuIcon / 45))}px !important;
+            height: ${Math.round(85 * (sizes.menuIcon / 45))}px !important;
+        }
+        
+        .decorative-icon-container {
+            padding: ${Math.round(22 * (sizes.menuIcon / 45))}px !important;
+        }
+        
+        .logo-section {
+            padding: ${Math.round(22 * (sizes.menuIcon / 45))}px !important;
+        }
+    `;
+}
+
+function updateButtonPosition() {
+    const btnContainer = document.querySelector('.top-right-button');
+    const scrollbarCover = document.getElementById('scrollbarCover');
+    const frame = document.getElementById('reportFrame');
+    const container = document.getElementById('iframeContainer');
+    
+    if (!btnContainer) return;
+    
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const resolutionKey = width + 'x' + height;
+    
+    const isStandalone = window.matchMedia('(display-mode: minimal-ui)').matches ||
+                         window.matchMedia('(display-mode: standalone)').matches || 
+                         window.navigator.standalone === true ||
+                         document.referrer.includes('android-app://');
+    
+    var positions;
+    
+    if (width === 1920 && height === 1080) {
+        positions = {
+            browser: 157,
+            app: 78,
+            cover: 135,
+            coverApp: 58
+        };
+        console.log('🔒 1920×1080 - קבוע: browser=157px, app=78px');
+    }
+    else if (container && container.style.display !== 'none') {
+        const dashboardWidth = 1920;
+        const dashboardHeight = 1080;
+        
+        const scaleX = width / dashboardWidth;
+        const scaleY = height / dashboardHeight;
+        const scale = Math.min(scaleX, scaleY);
+        
+        const scrollbarStartInDashboard = 1903;
+        const scaledScrollbarStart = scrollbarStartInDashboard * scale;
+        const scaledWidth = dashboardWidth * scale;
+        const leftOffset = (width - scaledWidth) / 2;
+        const scrollbarFromRight = width - (leftOffset + scaledScrollbarStart);
+        const rightShift = 16;
+        const coverWidth = Math.round(17 * scale) + 4;
+        const finalRight = Math.round(scrollbarFromRight) - rightShift;
+        
+        positions = {
+            browser: finalRight,
+            app: finalRight,
+            cover: finalRight,
+            coverApp: finalRight
+        };
+        
+        if (scrollbarCover) {
+            scrollbarCover.style.width = coverWidth + 'px';
+        }
+        
+        console.log('🎯 דינמי: scale=' + scale.toFixed(3) + ', right=' + finalRight + 'px');
+    }
+    else {
+        if (RESOLUTION_POSITIONS[resolutionKey]) {
+            positions = RESOLUTION_POSITIONS[resolutionKey];
+            console.log('📊 טבלה: ' + resolutionKey);
+        } else {
+            positions = calculatePositionForUnknownResolution(width);
+            console.log('📐 חישוב: ' + resolutionKey);
+        }
+    }
+    
+    if (isFullscreen()) {
+        btnContainer.style.setProperty('right', '0', 'important');
+        if (scrollbarCover) scrollbarCover.style.display = 'none';
+        console.log('🖥️ מסך מלא');
+    } else {
+        var coverExtraShift = 5;
+        
+        if (width === 1920 && height === 1080) {
+            coverExtraShift = coverExtraShift + 5;
+        }
+        
+        if (isStandalone) {
+            btnContainer.style.setProperty('right', positions.app + 'px', 'important');
+            if (scrollbarCover) {
+                scrollbarCover.style.display = 'block';
+                scrollbarCover.style.setProperty('right', (positions.coverApp - coverExtraShift) + 'px', 'important');
+            }
+        } else {
+            btnContainer.style.setProperty('right', positions.browser + 'px', 'important');
+            if (scrollbarCover) {
+                scrollbarCover.style.display = 'block';
+                scrollbarCover.style.setProperty('right', (positions.cover - coverExtraShift) + 'px', 'important');
+            }
+        }
+    }
+}
+
+function scaleIframeToFit() {
+    const frame = document.getElementById("reportFrame");
+    const container = document.getElementById("iframeContainer");
+    
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    
+    const dashboardWidth = 1920;
+    const dashboardHeight = 1080;
+    
+    const scaleX = screenWidth / dashboardWidth;
+    const scaleY = screenHeight / dashboardHeight;
+    
+    const scale = Math.min(scaleX, scaleY);
+    
+    frame.style.transform = 'scale(' + scale + ')';
+    frame.style.transformOrigin = 'top left';
+    frame.style.width = dashboardWidth + 'px';
+    frame.style.height = dashboardHeight + 'px';
+    
+    const scaledWidth = dashboardWidth * scale;
+    const scaledHeight = dashboardHeight * scale;
+    
+    const leftOffset = (screenWidth - scaledWidth) / 2;
+    const topOffset = 0;
+    
+    frame.style.left = Math.max(0, leftOffset) + 'px';
+    frame.style.top = topOffset + 'px';
+    
+    container.style.overflow = 'hidden';
+    container.style.width = '100vw';
+    container.style.height = '100vh';
+    container.style.position = 'fixed';
+    container.style.top = '0';
+    container.style.left = '0';
+}
+
+let isInitialLoad = true;
+let isFirstDashboardClick = true;
+
+window.addEventListener('load', function() {
+    scaleIframeToFit();
+    
+    const main = document.querySelector('.main');
+    main.style.display = 'flex';
+    
+    console.log('מסך הבית מוצג ישירות');
+    
+    const check1 = window.matchMedia('(display-mode: standalone)').matches;
+    const check2 = window.navigator.standalone === true;
+    const check3 = document.referrer.includes('android-app://');
+    const check4 = window.matchMedia('(display-mode: fullscreen)').matches;
+    const check5 = window.matchMedia('(display-mode: minimal-ui)').matches;
+    
+    const isStandalone = check1 || check2 || check3 || check4 || check5;
+    
+    if (isStandalone) {
+        console.log('זוהתה אפליקציה מותקנת');
+        
+        const btnContainer = document.querySelector('.top-right-button');
+        if (btnContainer) {
+            btnContainer.style.setProperty('right', '78px', 'important');
+        }
+        
+        const scrollbarCover = document.getElementById('scrollbarCover');
+        if (scrollbarCover) {
+            scrollbarCover.style.setProperty('right', '58px', 'important');
+        }
+    }
+    
+    setTimeout(function() {
+        handleScrollbarCoverInFullscreen();
+        updateButtonPosition();
+    }, 100);
+    
+    resetInactivityTimer();
+    console.log('✅ מערכת חוסר פעילות הופעלה - חזרה למסך הבית אחרי 5 דקות');
+});
+
+window.addEventListener('resize', function() {
+    scaleIframeToFit();
+    updateButtonPosition();
+});
+
+window.addEventListener('orientationchange', function() {
+    scaleIframeToFit();
+    updateButtonPosition();
+});
+
+function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const btn = document.querySelector('.top-right-button .top-btn');
+    const btnContainer = document.querySelector('.top-right-button');
+    
+    sidebar.classList.toggle("open");
+    
+    if (sidebar.classList.contains("open")) {
+        btn.style.display = 'none';
+        btnContainer.style.right = '417px';
+    } else {
+        btn.innerHTML = '❯';
+        btn.style.background = '#04274D';
+        btn.style.display = 'flex';
+        updateButtonPosition();
+    }
+    
+    resetInactivityTimer();
+}
+
+function returnToHome() {
+    const main = document.querySelector('.main');
+    const container = document.getElementById("iframeContainer");
+    const sidebar = document.getElementById("sidebar");
+    const btn = document.querySelector('.top-right-button .top-btn');
+    const btnContainer = document.querySelector('.top-right-button');
+    
+    sidebar.classList.remove("open");
+    btn.innerHTML = '❯';
+    
+    updateButtonPosition();
+    
+    btnContainer.style.display = 'none';
+    
+    container.style.display = "none";
+    main.style.display = "flex";
+    
+    document.querySelectorAll('.menu-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.top-menu-btn').forEach(function(b) { b.classList.remove('active'); });
+    
+    console.log('חזרה למסך הבית');
+    
+    resetInactivityTimer();
+}
+
+function loadReport(key) {
+    const frame = document.getElementById("reportFrame");
+    const container = document.getElementById("iframeContainer");
+    const loading = document.getElementById("loadingScreen");
+    const main = document.querySelector('.main');
+    
+    document.getElementById("sidebar").classList.remove("open");
+    
+    const btn = document.querySelector('.top-right-button .top-btn');
+    const btnContainer = document.querySelector('.top-right-button');
+    if (btn) {
+        btn.innerHTML = '❯';
+        btn.style.background = '#04274D';
+        btn.style.display = 'flex';
+        btnContainer.style.display = 'block';
+        
+        const isStandalone = window.matchMedia('(display-mode: minimal-ui)').matches || 
+                             window.matchMedia('(display-mode: standalone)').matches || 
+                             window.navigator.standalone === true;
+        
+        if (isStandalone) {
+            btnContainer.style.setProperty('right', '78px', 'important');
+        }
+        
+        updateButtonPosition();
+    }
+    
+    document.querySelectorAll('.menu-btn').forEach(function(b) { b.classList.remove('active'); });
+    const activeBtn = document.querySelector('[data-report="' + key + '"]');
+    if (activeBtn) activeBtn.classList.add('active');
+    
+    main.style.display = 'none';
+    loading.style.display = "flex";
+    frame.src = URLS[key];
+    container.style.display = "block";
+    
+    document.body.classList.add('loading-active');
+    
+    const scrollbarCover = document.getElementById('scrollbarCover');
+    
+    const isStandalone = window.matchMedia('(display-mode: minimal-ui)').matches || 
+                         window.matchMedia('(display-mode: standalone)').matches || 
+                         window.navigator.standalone === true;
+    
+    if (isStandalone && scrollbarCover) {
+        scrollbarCover.style.setProperty('right', '58px', 'important');
+    }
+    
+    if (isFirstDashboardClick) {
+        container.style.background = '#ffffff';
+        if (scrollbarCover) scrollbarCover.style.background = '#ffffff';
+    } else {
+        container.style.background = '#030E1D';
+        if (scrollbarCover) scrollbarCover.style.background = '#030E1D';
+    }
+    
+    // ⏰ 6 שניות - טעינה בסיסית (4.5 + 1.5)
+    setTimeout(function() {
+        loading.style.display = "none";
+        scaleIframeToFit();
+        document.body.classList.remove('loading-active');
+        
+        handleScrollbarCoverInFullscreen();
+        updateButtonPosition();
+        
+        let isFirstLoad = isFirstDashboardClick;
+        let hasDetectedClick = false;
+        
+        const checkInterval = setInterval(function() {
+            if (document.activeElement === frame && !hasDetectedClick && isFirstLoad) {
+                hasDetectedClick = true;
+                clearInterval(checkInterval);
+                
+                setTimeout(function() {
+                    loading.style.display = "flex";
+                    document.body.classList.add('loading-active');
+                    
+                    const scrollbarCover = document.getElementById('scrollbarCover');
+                    container.style.background = '#030E1D';
+                    if (scrollbarCover) scrollbarCover.style.background = '#030E1D';
+                    
+                    // ⏰ 8.8 שניות - קליק ראשון ב-iframe (7.3 + 1.5)
+                    setTimeout(function() {
+                        loading.style.display = "none";
+                        document.body.classList.remove('loading-active');
+                    }, 8800);
+                }, 300);
+            }
+        }, 200);
+        
+        // ⏰ 9.5 שניות - השהיית כפתורים נוספת (8 + 1.5)
+        const additionalHideTime = isFirstDashboardClick ? 9500 : 0;
+        
+        if (additionalHideTime > 0) {
+            document.body.classList.add('loading-active');
+            setTimeout(function() {
+                document.body.classList.remove('loading-active');
+            }, additionalHideTime);
+        }
+        
+        if (isFirstDashboardClick) {
+            isFirstDashboardClick = false;
+        }
+    }, 6000);
+    
+    resetInactivityTimer();
+}
+
+function updateDateTime() {
+    const now = new Date();
+    const hours = now.getHours();
+    
+    let greeting = '';
+    if (hours >= 5 && hours < 12) {
+        greeting = 'בוקר טוב,';
+    } else if (hours >= 12 && hours < 17) {
+        greeting = 'אחר צהריים טובים,';
+    } else {
+        greeting = 'ערב טוב,';
+    }
+    
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    
+    const hoursStr = String(hours).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    
+    const dateTimeStr = day + '-' + month + '-' + year + ' ' + hoursStr + ':' + minutes;
+    
+    document.getElementById('greeting').textContent = greeting;
+    document.getElementById('dateTime').textContent = dateTimeStr;
+}
+
+updateDateTime();
+setInterval(updateDateTime, 60000);
+
+function handleScrollbarCoverInFullscreen() {
+    updateButtonPosition();
+    updateSidebarScaling();
+}
+
+window.addEventListener('resize', handleScrollbarCoverInFullscreen);
+window.addEventListener('fullscreenchange', handleScrollbarCoverInFullscreen);
+window.addEventListener('webkitfullscreenchange', handleScrollbarCoverInFullscreen);
+window.addEventListener('mozfullscreenchange', handleScrollbarCoverInFullscreen);
+window.addEventListener('MSFullscreenChange', handleScrollbarCoverInFullscreen);
+
+if (screen.orientation) {
+    screen.orientation.addEventListener('change', function() {
+        console.log('📱 אוריינטציה השתנתה');
+        setTimeout(handleScrollbarCoverInFullscreen, 100);
+    });
+}
+
+var lastWidth = window.innerWidth;
+var lastHeight = window.innerHeight;
+setInterval(function() {
+    if (window.innerWidth !== lastWidth || window.innerHeight !== lastHeight) {
+        console.log('🔄 רזולוציה השתנתה מ-' + lastWidth + 'x' + lastHeight + ' ל-' + window.innerWidth + 'x' + window.innerHeight);
+        lastWidth = window.innerWidth;
+        lastHeight = window.innerHeight;
+        handleScrollbarCoverInFullscreen();
+    }
+}, 500);
+
+window.addEventListener('load', function() {
+    updateSidebarScaling();
+});
+
+</script>
+
+</body>
+</html>
