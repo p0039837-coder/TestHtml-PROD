@@ -960,56 +960,7 @@ const RESOLUTION_POSITIONS = {
     "800x600": { browser: 65, app: 33, cover: 56, coverApp: 24 }
 };
 
-// ⏰ מערכת חוסר פעילות - חזרה למסך הבית אחרי 5 דקות
-let inactivityTimer;
-const INACTIVITY_TIMEOUT = 300000; // 5 דקות
-const MAX_LOADING_TIME = 9500; // 9.5 שניות
-
-function resetInactivityTimer() {
-    clearTimeout(inactivityTimer);
-    inactivityTimer = setTimeout(function() {
-        const container = document.getElementById("iframeContainer");
-        if (container && container.style.display !== 'none') {
-            console.log('⏰ 5 דקות חוסר פעילות - חזרה למסך הבית');
-            returnToHomeWithLoading();
-        }
-    }, INACTIVITY_TIMEOUT);
-}
-
-function returnToHomeWithLoading() {
-    const loading = document.getElementById("loadingScreen");
-    const main = document.querySelector('.main');
-    const container = document.getElementById("iframeContainer");
-    const sidebar = document.getElementById("sidebar");
-    const btnContainer = document.querySelector('.top-right-button');
-    
-    loading.style.display = "flex";
-    document.body.classList.add('loading-active');
-    
-    setTimeout(function() {
-        sidebar.classList.remove("open");
-        const btn = document.querySelector('.top-right-button .top-btn');
-        if (btn) btn.innerHTML = '❯';
-        
-        updateButtonPosition();
-        btnContainer.style.display = 'none';
-        container.style.display = "none";
-        main.style.display = "flex";
-        
-        document.querySelectorAll('.menu-btn').forEach(function(b) { b.classList.remove('active'); });
-        document.querySelectorAll('.top-menu-btn').forEach(function(b) { b.classList.remove('active'); });
-        
-        loading.style.display = "none";
-        document.body.classList.remove('loading-active');
-        
-        console.log('✅ חזרנו למסך הבית');
-        resetInactivityTimer();
-    }, MAX_LOADING_TIME);
-}
-
-['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'].forEach(function(event) {
-    document.addEventListener(event, resetInactivityTimer, true);
-});
+const MAX_LOADING_TIME = 9500;
 
 function calculatePositionForUnknownResolution(width) {
     return {
@@ -1356,9 +1307,6 @@ window.addEventListener('load', function() {
         handleScrollbarCoverInFullscreen();
         updateButtonPosition();
     }, 100);
-    
-    resetInactivityTimer();
-    console.log('✅ מערכת חוסר פעילות הופעלה - חזרה למסך הבית אחרי 5 דקות');
 });
 
 window.addEventListener('resize', function() {
@@ -1387,8 +1335,6 @@ function toggleSidebar() {
         btn.style.display = 'flex';
         updateButtonPosition();
     }
-    
-    resetInactivityTimer();
 }
 
 function returnToHome() {
@@ -1412,8 +1358,6 @@ function returnToHome() {
     document.querySelectorAll('.top-menu-btn').forEach(function(b) { b.classList.remove('active'); });
     
     console.log('חזרה למסך הבית');
-    
-    resetInactivityTimer();
 }
 
 function loadReport(key) {
@@ -1472,7 +1416,6 @@ function loadReport(key) {
         if (scrollbarCover) scrollbarCover.style.background = '#030E1D';
     }
     
-    // ⏰ 6 שניות - טעינה בסיסית (4.5 + 1.5)
     setTimeout(function() {
         loading.style.display = "none";
         scaleIframeToFit();
@@ -1497,7 +1440,6 @@ function loadReport(key) {
                     container.style.background = '#030E1D';
                     if (scrollbarCover) scrollbarCover.style.background = '#030E1D';
                     
-                    // ⏰ 8.8 שניות - קליק ראשון ב-iframe (7.3 + 1.5)
                     setTimeout(function() {
                         loading.style.display = "none";
                         document.body.classList.remove('loading-active');
@@ -1506,7 +1448,6 @@ function loadReport(key) {
             }
         }, 200);
         
-        // ⏰ 9.5 שניות - השהיית כפתורים נוספת (8 + 1.5)
         const additionalHideTime = isFirstDashboardClick ? 9500 : 0;
         
         if (additionalHideTime > 0) {
@@ -1520,8 +1461,6 @@ function loadReport(key) {
             isFirstDashboardClick = false;
         }
     }, 6000);
-    
-    resetInactivityTimer();
 }
 
 function updateDateTime() {
